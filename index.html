@@ -54,6 +54,10 @@ iframe{
 h1{
   text-align:center;
 }
+iframe{
+  width: 100%;
+  height:190px;
+}
 </style>
   </head>
   <body>
@@ -66,52 +70,65 @@ h1{
           var scriptElm = document.createElement("script")
           scriptElm.src = "https://web.inajob.tk/my-twit-summary/hot.js?" + Math.floor(Math.random()*10000)
           document.body.appendChild(scriptElm);
-          setTimeout(() => {
-          var contents = document.getElementById("contents");
-          tweets.reverse()
-          var candidates = []
-          tweets.forEach((v, i) => {
-                      if(v[1].retweet_count < 1000){candidates.push(v)}
-                    });
-          //candidates.sort((a,b) => {return a[1].retweet_count - b[1].retweet_count});
-          var s = "";
-          candidates.forEach((v, i) => {
-                      if(v[1].count > 1 && i < 20){
-                                  //document.write("<table>" + "<td><img src='" + v[0] + "'></td><td>" + v[1].count + " " + v[1].text +"<a href='" + v[1]["tweet_url"] +"'>[url]</a>" + "</td></table>");
-                                  s += ("<div class='piece'>") +
-                                  ('<h2>No. ' + (i + 1) + ' Score: ' + v[1].count + ' ' + v[1].retweet_count + ' ' + v[1].favorite_count + '</h2>') +
-                                  ('<blockquote class="twitter-tweet"><a href="' + v[1]["tweet_url"] + '"></a></blockquote>') +
-                                  ("</div>");
-                      }
-                    });
-          contents.innerHTML = s
+          function init(){
+                      var contents = document.getElementById("contents");
+                      tweets.reverse()
+                      var candidates = []
+                      tweets.forEach((v, i) => {
+                                  if(v[1].retweet_count < 1000){candidates.push(v)}
+                                });
+                      //candidates.sort((a,b) => {return a[1].retweet_count - b[1].retweet_count});
+                      var s = "";
+                      candidates.forEach((v, i) => {
+                                  if(v[1].count > 1 && i < 20){
+                                              s += ("<div class='piece'>") +
+                                                ('<h2>No. ' + (i + 1) + ' Score: ' + v[1].count + ' ' + v[1].retweet_count + ' ' + v[1].favorite_count + '</h2>');
+                                              if(v[0].indexOf("pbs.twimg.com") != -1){
+                                                          s += ('<blockquote class="twitter-tweet"><a href="' + v[1]["tweet_url"] + '"></a></blockquote>')
+                                                        }else if(v[0].indexOf("twitter.com") != -1){
+                                                          s += ('<blockquote class="twitter-tweet"><a href="' + v[0] + '"></a></blockquote>')
+                                                        }else{
+                                                                    s += ('<iframe src=https://hatenablog-parts.com/embed?url="' + encodeURIComponent(v[0]) + '"></iframe>')
+                                                                  }
+                                              s += ("</div>");
+                                            }
+                                });
+                      contents.innerHTML = s
 
-          window.twttr = (function(d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0],
-              t = window.twttr || {};
-            if (d.getElementById(id)) return t;
-            js = d.createElement(s);
-            js.id = id;
-            js.src = "https://platform.twitter.com/widgets.js";
-            fjs.parentNode.insertBefore(js, fjs);
+                      window.twttr = (function(d, s, id) {
+                                  var js, fjs = d.getElementsByTagName(s)[0],
+                                    t = window.twttr || {};
+                                  if (d.getElementById(id)) return t;
+                                  js = d.createElement(s);
+                                  js.id = id;
+                                  js.src = "https://platform.twitter.com/widgets.js";
+                                  fjs.parentNode.insertBefore(js, fjs);
 
-            t._e = [];
-            t.ready = function(f) {
-              t._e.push(f);
-            };
+                                  t._e = [];
+                                  t.ready = function(f) {
+                                              t._e.push(f);
+                                            };
 
-            setInterval(() => {
-                        Array.prototype.slice.apply(document.getElementsByClassName("twitter-tweet")).forEach((v) => {
-                                    let h = v.firstChild.clientHeight;
-                                    let w = v.firstChild.clientWidth;
-                                    v.style.height=h*0.7 + "px";
-                                    v.style.width="auto";
-                                  })
-            }, 1000)
-            return t;
-          }(document, "script", "twitter-wjs"));
+                                  setInterval(() => {
+                                              Array.prototype.slice.apply(document.getElementsByClassName("twitter-tweet")).forEach((v) => {
+                                                          let h = v.firstChild.clientHeight;
+                                                          let w = v.firstChild.clientWidth;
+                                                          v.style.height=h*0.7 + "px";
+                                                          v.style.width="auto";
+                                                        })
+                                            }, 1000)
+                                  return t;
+                                }(document, "script", "twitter-wjs"));
 
-        }, 1000);
+                    }
+          var timer = setInterval(() => {
+                      if(tweets){
+                                  clearTimeout(timer);
+                                  init();
+                                  tweets = undefined;
+                                }else{
+                                          }
+                    }, 2000);
 
         </script>
   </body>
